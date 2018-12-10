@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="/socket.io/socket.io.js"></script>
+
+    </head>
+    <body>
+      <div id="mainContent">
+        <h1>Loading...</h1>
+      </div>
+        <!-- <script src="bundle.js"></script> -->
+        <script src="/js/stateManager.js"></script>
+        <script>
+          var stateManager = new StateManager();
+          stateManager.goTo(gameState);
+        </script>
+    </body>
+</html>

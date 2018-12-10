@@ -1,0 +1,35 @@
+{
+  "name": "basedefendcoop",
+  "version": "1.0.0",
+  "description": "Base Network Multiplayer Coop defense rescource game",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dakine135/BaseDefendCoop.git"
+  },
+  "keywords": [
+    "coop",
+    "multiplayer",
+    "defense",
+    "base",
+    "rescource",
+    "graph"
+  ],
+  "author": "Dustin Welborn",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/Dakine135/BaseDefendCoop/issues"
+  },
+  "homepage": "https://github.com/Dakine135/BaseDefendCoop#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "node-gameloop": "^0.1.4",
+    "nodemon": "^1.18.7",
+    "socket.io": "^2.2.0"
+  }
+}
