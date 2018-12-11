@@ -44,6 +44,7 @@ class StateManager {
 var gameState = {
   template: "../html/game.html",
   scripts: ["../js/assets/button.js",
+            "../js/input.js",
             "../js/render.js",
             "../js/game.js"],
   name: "gameState",
