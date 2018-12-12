@@ -18,10 +18,13 @@ function runWhenReady(){
 
 runWhenReady();
 
+// let testNode = new EnergyNode();
+// console.log(testNode.test());
+
 
 var avgFPS = 0;
 var frames = 0;
-var everySecond = 1000;
+var everySecondCountDown = 1000;
 var lastFrameTime = new Date().getTime();
 var deltaTime = 0;
 function mainLoop(){
@@ -29,12 +32,13 @@ function mainLoop(){
     let now = new Date().getTime();
     deltaTime = now - lastFrameTime;
     lastFrameTime = now;
-    everySecond = everySecond - deltaTime;
+    everySecondCountDown = everySecondCountDown - deltaTime;
     frames++;
-    if(everySecond < 0){
+    if(everySecondCountDown < 0){
         avgFPS = Math.round((frames * 0.8) + (avgFPS * 0.2));
         frames = 0;
-        everySecond = 1000;
+        everySecondCountDown = 1000;
+
     }
 
 
@@ -42,6 +46,9 @@ function mainLoop(){
     //step and interpolate objects betweem frames
 
     //render frame
-    renderCanvas.draw(avgFPS);
+    // if(newSecond)
+    renderCanvas.drawBackground();
+    renderCanvas.drawView();
+    renderCanvas.drawGui();
     window.requestAnimationFrame(mainLoop);
 }
