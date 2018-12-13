@@ -14,8 +14,12 @@ class Input {
         };
         this.cameraSpeed = 1;
 
+        this.userActions = {};
+
         console.log("now processing user input");
     }//constructor
+
+
 
     scrollEvent(e){
         // console.log("scroll event:", e);

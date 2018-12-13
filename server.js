@@ -6,9 +6,11 @@ var socket = require('socket.io');
 // var GameState = require('./serverGameState.js');
 // var GLOBALS = require('./GLOBALS.js');
 var Engine = require('./gameEngine/main.js');
-// var EnergyNode = require('./client/shared/EnergyNode');
-// let testNode = new EnergyNode();
-// console.log(testNode.test());
+var EnergyNode = require('./client/shared/EnergyNode');
+let testNode = new EnergyNode.init("stringConstructor");
+let testNode2 = new EnergyNode.init("dasfasdf");
+console.log(testNode.toString());
+console.log(testNode2.toString());
 
 var app = express();
 var server = app.listen(3033);

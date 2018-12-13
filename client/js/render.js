@@ -33,20 +33,24 @@ class RenderCanvas {
 
     initCanvas() {
        console.log("initCanvas");
+       //Background layer 0
+       this.backgroundCanvas = document.getElementById("background-layer");
+       this.backgroundRender = this.viewCanvas.getContext("2d", { alpha: false });
+       this.backgroundCanvas.width = this.viewWidth;
+       this.backgroundCanvas.height = this.viewHeight;
+       //Game View middle layer 1
        this.viewCanvas = document.getElementById("view-layer");
        this.viewRender = this.viewCanvas.getContext("2d");
        this.viewWidth = window.innerWidth;
        this.viewHeight = window.innerHeight;
        this.viewCanvas.width = this.viewWidth;
        this.viewCanvas.height = this.viewHeight;
-       this.backgroundCanvas = document.getElementById("background-layer");
-       this.backgroundRender = this.viewCanvas.getContext("2d");
-       this.backgroundCanvas.width = this.viewWidth;
-       this.backgroundCanvas.height = this.viewHeight;
+       //HUD overloay top layer 2
        this.hudCanvas = document.getElementById("hud-layer");
        this.hudRender = this.viewCanvas.getContext("2d");
        this.hudCanvas.width = this.viewWidth;
        this.hudCanvas.height = this.viewHeight;
+       //initalize camera view to center
        this.cameraX = (this.worldWidth / 2) - (this.viewWidth / 2);
        this.cameraY = (this.worldHeight / 2) - (this.viewHeight / 2);
     } //end initCanvas

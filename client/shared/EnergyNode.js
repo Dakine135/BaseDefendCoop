@@ -1,20 +1,15 @@
 (function(exports){
 
+    var testClassDef = class testClass{
+        constructor(inputString){
+            this.string = inputString;
+            this.name = "blah";
+        }
+        toString(){
+            return this.string + this.name;
+        }
+    }
 
-
-   exports.EnergyNode = function(){
-
-       var testClass = function() {
-           this.constructor = function(){
-
-           }
-           this.test = function(){
-               return "Hello World"
-           }
-           this.constructor();
-       }
-
-        return testClass;
-    };
+   exports.init = testClassDef;
 
 })(typeof exports === 'undefined'? this['EnergyNode']={}: exports);

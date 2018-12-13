@@ -18,8 +18,8 @@ function runWhenReady(){
 
 runWhenReady();
 
-// let testNode = new EnergyNode();
-// console.log(testNode.test());
+let testNode = new EnergyNode.init("string in browser");
+console.log(testNode.toString());
 
 
 var avgFPS = 0;
@@ -27,6 +27,7 @@ var frames = 0;
 var everySecondCountDown = 1000;
 var lastFrameTime = new Date().getTime();
 var deltaTime = 0;
+var timestep = 20; //ms = milliseconds
 function mainLoop(){
     // console.log("Mainloop");
     let now = new Date().getTime();
@@ -41,9 +42,13 @@ function mainLoop(){
 
     }
 
+    //process cleint Input
+    //process latest server update if any
 
-    //process latest server update
-    //step and interpolate objects betweem frames
+    //step and extrapolate between updates/frames
+        //this should be done in fixed time steps with a
+        //calulation on time lost between updates (lag)
+        //then looped to allow multiple between frame renders if neccissary
 
     //render frame
     // if(newSecond)
