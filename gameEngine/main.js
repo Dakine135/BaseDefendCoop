@@ -10,9 +10,6 @@ class Engine {
   }
 
   start(){
-
-    var oneTime = 1;
-    // start the loop at 60 fps (1000/60ms per frame) and grab its id
     var TIMESTEP = 1000 / this.ticRate;
     var delta = 0;
     this.id = gameloop.setGameLoop(function(lastTickDelta) {
@@ -23,12 +20,6 @@ class Engine {
         if(this.frameCount % (this.ticRate * 10) == 0){
           //every 10 seconds
           console.log('frame=%s, delta=%s', this.frameCount, delta);
-        }
-
-        if(oneTime > 0){
-          // var point = new GLOBALS.paper.Point(100,100);
-          // GAMESTATE.GRAPH.addEnergyNode(point);
-          oneTime--;
         }
 
         // Simulate the total elapsed time in fixed-size chunks

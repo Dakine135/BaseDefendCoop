@@ -33,21 +33,21 @@ class RenderCanvas {
 
     initCanvas() {
        console.log("initCanvas");
-       //Background layer 0
-       this.backgroundCanvas = document.getElementById("background-layer");
-       this.backgroundRender = this.viewCanvas.getContext("2d", { alpha: false });
-       this.backgroundCanvas.width = this.viewWidth;
-       this.backgroundCanvas.height = this.viewHeight;
-       //Game View middle layer 1
-       this.viewCanvas = document.getElementById("view-layer");
-       this.viewRender = this.viewCanvas.getContext("2d");
        this.viewWidth = window.innerWidth;
        this.viewHeight = window.innerHeight;
+       //Background layer 1
+       this.backgroundCanvas = document.getElementById("background-layer");
+       this.backgroundRender = this.backgroundCanvas.getContext("2d");
+       this.backgroundCanvas.width = this.viewWidth;
+       this.backgroundCanvas.height = this.viewHeight;
+       //Game View middle layer 2
+       this.viewCanvas = document.getElementById("view-layer");
+       this.viewRender = this.viewCanvas.getContext("2d");
        this.viewCanvas.width = this.viewWidth;
        this.viewCanvas.height = this.viewHeight;
-       //HUD overloay top layer 2
+       //HUD overloay top layer 3
        this.hudCanvas = document.getElementById("hud-layer");
-       this.hudRender = this.viewCanvas.getContext("2d");
+       this.hudRender = this.hudCanvas.getContext("2d");
        this.hudCanvas.width = this.viewWidth;
        this.hudCanvas.height = this.viewHeight;
        //initalize camera view to center
@@ -86,22 +86,32 @@ class RenderCanvas {
     }
 
     drawBackground(){
+        // console.log("drawing Background");
+        //clear the game canvas
+        // this.backgroundRender.save();
+        // this.backgroundRender.setTransform(1, 0, 0, 1, 0, 0);
+        // this.backgroundRender.clearRect(0, 0, this.viewWidth,this.viewHeight);
+        // this.backgroundRender.beginPath();
+        // this.backgroundRender.restore();
+
         //draw background first
+        this.backgroundRender.save();
         this.backgroundRender.fillStyle = "black";
         this.backgroundRender.fillRect(0,0,this.viewWidth,this.viewHeight);
+        this.backgroundRender.restore();
 
         // for(var x=0;x<this.worldWidth;x++){
         //     for(var y=0;y<this.worldHeight;y++){
         //         if(this.stars[x][y] > 0){
-        //             this.renderBackground.save();
-        //             this.renderBackground.translate(this.cameraX, this.cameraY);
-        //             this.renderBackground.scale(this.scaleFactor, this.scaleFactor);
-        //             this.renderBackground.beginPath();
-        //             this.renderBackground.arc(x, y, this.stars[x][y], 0, 2*Math.PI, false);
-        //             this.renderBackground.closePath();
-        //             this.renderBackground.fillStyle = "white";
-        //             this.renderBackground.fill();
-        //             this.renderBackground.restore();
+        //             this.backgroundRender.save();
+        //             this.backgroundRender.translate(this.cameraX, this.cameraY);
+        //             this.backgroundRender.scale(this.scaleFactor, this.scaleFactor);
+        //             this.backgroundRender.beginPath();
+        //             this.backgroundRender.arc(x, y, this.stars[x][y], 0, 2*Math.PI, false);
+        //             this.backgroundRender.closePath();
+        //             this.backgroundRender.fillStyle = "white";
+        //             this.backgroundRender.fill();
+        //             this.backgroundRender.restore();
         //         }
         //     }
         // } //star draw background
@@ -110,11 +120,11 @@ class RenderCanvas {
     drawView(){
 
         //clear the game canvas
-        // this.viewRender.save();
-        // this.viewRender.setTransform(1, 0, 0, 1, 0, 0);
-        // this.viewRender.clearRect(0, 0, 100, 50);
-        // this.viewRender.beginPath();
-        // this.viewRender.restore();
+        this.viewRender.save();
+        this.viewRender.setTransform(1, 0, 0, 1, 0, 0);
+        this.viewRender.clearRect(0, 0, this.viewWidth,this.viewHeight);
+        this.viewRender.beginPath();
+        this.viewRender.restore();
 
         var recSize = 100;
         var recX = Math.floor((this.worldWidth / 2) - (recSize/2));
@@ -125,19 +135,26 @@ class RenderCanvas {
         this.viewRender.translate(this.cameraX, this.cameraY);
         this.viewRender.scale(this.scaleFactor, this.scaleFactor);
         this.viewRender.beginPath();
-        this.viewRender.rect(recX , recY, recSize, recSize);
-        this.viewRender.closePath();
         this.viewRender.fillStyle = "blue";
-        this.viewRender.fill();
+        this.viewRender.fillRect(recX , recY, recSize, recSize);
+        this.viewRender.closePath();
         this.viewRender.restore();
     }
 
     drawGui(){
+        //clear the game canvas
+        this.hudRender.save();
+        this.hudRender.setTransform(1, 0, 0, 1, 0, 0);
+        this.hudRender.clearRect(0, 0, this.viewWidth,this.viewHeight);
+        this.hudRender.beginPath();
+        this.hudRender.restore();
+
         this.hudRender.save();
         this.hudRender.font = "20px Arial";
         this.hudRender.fillStyle = "orange";
         this.hudRender.fillText("FPS:"+avgFPS, 0, 20);
         this.hudRender.fillText("DeltaTime:"+deltaTime, 0, 40);
+        this.hudRender.fillText("Ping: ping", 0, 60);
         this.hudRender.restore();
     }
 
