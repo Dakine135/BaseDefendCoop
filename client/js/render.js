@@ -1,6 +1,6 @@
 class RenderCanvas {
     constructor(){
-        window.addEventListener('resize', this.initCanvas, false);
+        window.addEventListener('resize', this.initCanvas.bind(this), false);
         this.viewCanvas = null;
         this.viewRender = null;
         this.backgroundCanvas = null;
@@ -14,7 +14,6 @@ class RenderCanvas {
         this.scaleFactor = 1.00;
         this.cameraX = 0;
         this.cameraY = 0;
-        this.initCanvas();
 
         //background stars
         this.worldWidth = 3000;
@@ -29,6 +28,7 @@ class RenderCanvas {
                 } else this.stars[x][y] = 0;
             }
         }
+        this.initCanvas();
     }
 
     initCanvas() {
@@ -51,8 +51,15 @@ class RenderCanvas {
        this.hudCanvas.width = this.viewWidth;
        this.hudCanvas.height = this.viewHeight;
        //initalize camera view to center
-       this.cameraX = (this.worldWidth / 2) - (this.viewWidth / 2);
-       this.cameraY = (this.worldHeight / 2) - (this.viewHeight / 2);
+       // console.log("Camera BEFORE", this.cameraX, this.cameraY);
+       // console.log("world: ", this.worldWidth, this.worldHeight);
+       // console.log("view: ", this.viewWidth, this.viewHeight);
+       // this.cameraX = (this.worldWidth / 2) - (this.viewWidth / 2);
+       // this.cameraY = (this.worldHeight / 2) - (this.viewHeight / 2);
+       this.cameraX = (this.worldWidth / 2);
+       this.cameraY = (this.worldHeight / 2);
+       console.log("Camera: ", this.cameraX, this.cameraY);
+       this.drawBackground();
     } //end initCanvas
 
     zoomView(dir, mouseX, mouseY){
@@ -62,19 +69,26 @@ class RenderCanvas {
         // console.log("mouse: %s,%s",x,y);
         // this.cameraX = Math.round(x/2) - this.viewWidth;
         // this.cameraY = Math.round(y/2) - this.viewHeight;
-        this.cameraX = this.viewWidth / 2;
-        this.cameraY = this.viewHeight / 2;
         this.scaleFactor = this.scaleFactor + (Math.sign(dir) * 0.5);
         this.scaleFactor = (Math.round(this.scaleFactor * 10))/10;
         if(this.scaleFactor < 0.3) this.scaleFactor = 0.3;
         if(this.scaleFactor > 3) this.scaleFactor = 3;
+        // this.cameraX = this.viewWidth / 2;
+        // this.cameraY = this.viewHeight / 2;
         console.log("zoom: ", this.scaleFactor, this.cameraX, this.cameraY);
+        // this.drawBackground();
     }
 
     panView(x,y,panSpeed){
-        console.log("panView: ",x,y,panSpeed);
+        // console.log("panView: ",x,y,panSpeed);
         this.cameraX = this.cameraX + (x * panSpeed);
         this.cameraY = this.cameraY + (y * panSpeed);
+        if(this.cameraX < 0) this.cameraX = 0;
+        if(this.cameraX > this.worldWidth) this.cameraX = this.worldWidth;
+        if(this.cameraY < 0) this.cameraY = 0;
+        if(this.cameraY > this.worldHeight) this.cameraY = this.worldHeight;
+        console.log("panView:",this.cameraX, this.cameraY, "scale:", this.scaleFactor);
+        // this.drawBackground();
     }
 
     getMousePos(evt) {
@@ -102,19 +116,21 @@ class RenderCanvas {
 
         // for(var x=0;x<this.worldWidth;x++){
         //     for(var y=0;y<this.worldHeight;y++){
-        //         if(this.stars[x][y] > 0){
-        //             this.backgroundRender.save();
-        //             this.backgroundRender.translate(this.cameraX, this.cameraY);
-        //             this.backgroundRender.scale(this.scaleFactor, this.scaleFactor);
-        //             this.backgroundRender.beginPath();
-        //             this.backgroundRender.arc(x, y, this.stars[x][y], 0, 2*Math.PI, false);
-        //             this.backgroundRender.closePath();
-        //             this.backgroundRender.fillStyle = "white";
-        //             this.backgroundRender.fill();
-        //             this.backgroundRender.restore();
-        //         }
-        //     }
-        // } //star draw background
+        for(var x=0;x<this.viewWidth;x++){
+            for(var y=0;y<this.viewHeight;y++){
+                if(this.stars[x][y] > 0){
+                    this.backgroundRender.save();
+                    // this.backgroundRender.translate(this.cameraX, this.cameraY);
+                    // this.backgroundRender.scale(this.scaleFactor, this.scaleFactor);
+                    this.backgroundRender.beginPath();
+                    this.backgroundRender.arc(x, y, this.stars[x][y], 0, 2*Math.PI, false);
+                    this.backgroundRender.closePath();
+                    this.backgroundRender.fillStyle = "white";
+                    this.backgroundRender.fill();
+                    this.backgroundRender.restore();
+                }
+            }
+        } //star draw background
     }
 
     drawView(){
@@ -127,16 +143,31 @@ class RenderCanvas {
         this.viewRender.restore();
 
         var recSize = 100;
-        var recX = Math.floor((this.worldWidth / 2) - (recSize/2));
-        var recY = Math.floor((this.worldHeight / 2) - (recSize/2));
 
         // this.viewRender.clearRect(0, 0, this.viewWidth, this.viewHeight);
         this.viewRender.save();
         this.viewRender.translate(this.cameraX, this.cameraY);
         this.viewRender.scale(this.scaleFactor, this.scaleFactor);
+        //world edge
+        this.viewRender.strokeStyle = "red";
+        this.viewRender.strokeSize = "2";
+        let size = this.worldWidth - 200;
+        this.viewRender.rect(100 ,100, size, size);
+        this.viewRender.stroke();
+
         this.viewRender.beginPath();
+        this.viewRender.fillStyle = "white";
+        this.viewRender.fillRect(-500 ,-500, recSize, recSize);
+        this.viewRender.fillStyle = "green";
+        this.viewRender.fillRect(100 ,100, recSize, recSize);
+        this.viewRender.fillStyle = "red";
+        this.viewRender.fillRect(1000 , 1000, recSize, recSize);
         this.viewRender.fillStyle = "blue";
+        let recX = Math.floor((this.worldWidth / 2) - (recSize/2));
+        let recY = Math.floor((this.worldHeight / 2) - (recSize/2));
         this.viewRender.fillRect(recX , recY, recSize, recSize);
+        this.viewRender.fillStyle = "yellow";
+        this.viewRender.fillRect(2800 , 2800, recSize, recSize);
         this.viewRender.closePath();
         this.viewRender.restore();
     }

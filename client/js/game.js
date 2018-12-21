@@ -39,7 +39,7 @@ function mainLoop(){
         avgFPS = Math.round((frames * 0.8) + (avgFPS * 0.2));
         frames = 0;
         everySecondCountDown = 1000;
-
+        // renderCanvas.drawBackground();
     }
 
     //process cleint Input
@@ -52,7 +52,7 @@ function mainLoop(){
 
     //render frame
     // if(newSecond)
-    renderCanvas.drawBackground();
+    // renderCanvas.drawBackground();
     renderCanvas.drawView();
     renderCanvas.drawGui();
     window.requestAnimationFrame(mainLoop);

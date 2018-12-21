@@ -12,7 +12,7 @@ class Input {
             s: (speed)=>{renderCanvas.panView(0,-1,speed);},
             d: (speed)=>{renderCanvas.panView(-1,0,speed);}
         };
-        this.cameraSpeed = 1;
+        this.cameraSpeed = 100;
 
         this.userActions = {};
 
@@ -34,7 +34,7 @@ class Input {
             return;
         }
         if(e.repeat) this.cameraSpeed = this.cameraSpeed + 2;
-        else this.cameraSpeed = 1;
+        else this.cameraSpeed = 100;
         this.controls[e.key](this.cameraSpeed);
     }
 
