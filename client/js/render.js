@@ -15,9 +15,12 @@ class RenderCanvas {
         this.cameraX = 0;
         this.cameraY = 0;
 
-        //background stars
+        //World Stuff
         this.worldWidth = 3000;
         this.worldHeight = 3000;
+        this.margin = 100;
+
+        //background stars
         this.stars = [];
         for(var x=0;x<this.worldWidth;x++){
             this.stars[x] = [];
@@ -56,8 +59,9 @@ class RenderCanvas {
        // console.log("view: ", this.viewWidth, this.viewHeight);
        // this.cameraX = (this.worldWidth / 2) - (this.viewWidth / 2);
        // this.cameraY = (this.worldHeight / 2) - (this.viewHeight / 2);
-       this.cameraX = (this.worldWidth / 2);
-       this.cameraY = (this.worldHeight / 2);
+       let middleWorldX = Math.floor(this.worldWidth / 2);
+       let middleWorldY = Math.floor(this.worldHeight / 2);
+       this.setCamera(middleWorldX, middleWorldY);
        console.log("Camera: ", this.cameraX, this.cameraY);
        this.drawBackground();
     } //end initCanvas
@@ -81,14 +85,28 @@ class RenderCanvas {
 
     panView(x,y,panSpeed){
         // console.log("panView: ",x,y,panSpeed);
-        this.cameraX = this.cameraX + (x * panSpeed);
-        this.cameraY = this.cameraY + (y * panSpeed);
-        if(this.cameraX < 0) this.cameraX = 0;
-        if(this.cameraX > this.worldWidth) this.cameraX = this.worldWidth;
-        if(this.cameraY < 0) this.cameraY = 0;
-        if(this.cameraY > this.worldHeight) this.cameraY = this.worldHeight;
+        let moveToX = this.cameraX + (x * panSpeed);
+        let moveToY = this.cameraY + (y * panSpeed);
+        this.setCamera(moveToX, moveToY);
         console.log("panView:",this.cameraX, this.cameraY, "scale:", this.scaleFactor);
         // this.drawBackground();
+    }
+
+    //Sets camera center at position in gameWorld
+    setCamera(x, y){
+      console.log("setCamera:", x, y);
+      let centerX = Math.floor(x - (this.viewWidth / 2));
+      let centerY = Math.floor(y - (this.viewHeight / 2));
+      let marginW = Math.floor((this.viewWidth / 2) + this.margin);
+      let marginH = Math.floor((this.viewHeight / 2) + this.margin);
+      let widthUpperBound = this.worldWidth - marginW;
+      let heightUpperBound = this.worldHeight - marginH;
+      if(centerX < marginW) centerX = marginW;
+      if(centerX > widthUpperBound) centerX = widthUpperBound;
+      if(centerY < marginH) centerY = marginH;
+      if(centerY > heightUpperBound) centerY = heightUpperBound;
+      this.cameraX = centerX;
+      this.cameraY = centerY;
     }
 
     getMousePos(evt) {
@@ -146,7 +164,7 @@ class RenderCanvas {
 
         // this.viewRender.clearRect(0, 0, this.viewWidth, this.viewHeight);
         this.viewRender.save();
-        this.viewRender.translate(this.cameraX, this.cameraY);
+        this.viewRender.translate(-this.cameraX, -this.cameraY);
         this.viewRender.scale(this.scaleFactor, this.scaleFactor);
         //world edge
         this.viewRender.strokeStyle = "red";
@@ -167,7 +185,7 @@ class RenderCanvas {
         let recY = Math.floor((this.worldHeight / 2) - (recSize/2));
         this.viewRender.fillRect(recX , recY, recSize, recSize);
         this.viewRender.fillStyle = "yellow";
-        this.viewRender.fillRect(2800 , 2800, recSize, recSize);
+        this.viewRender.fillRect(this.worldWidth - (this.margin*2) , this.worldHeight - (this.margin*2), recSize, recSize);
         this.viewRender.closePath();
         this.viewRender.restore();
     }
