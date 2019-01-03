@@ -16,21 +16,16 @@ class RenderCanvas {
         this.cameraY = 0;
 
         //World Stuff
-        this.worldWidth = 3000;
-        this.worldHeight = 3000;
-        this.margin = 100;
+        this.numOfTilesX = 1024;
+        this.numOfTilesY = 1024;
+        this.tilesPixelSize = 32;
+        this.worldPixelWidth = this.numOfTilesX * this.tilesPixelSize;
+        this.worldPixelHeight = this.numOfTilesY * this.tilesPixelSize;
+        this.margin = this.tilesPixelSize * 2;
 
         //background stars
         this.stars = [];
-        for(var x=0;x<this.worldWidth;x++){
-            this.stars[x] = [];
-            for(var y=0;y<this.worldHeight;y++){
-                if(Math.random() < 0.0005){
-                    let size = (Math.random() * 2);
-                    this.stars[x][y] = size;
-                } else this.stars[x][y] = 0;
-            }
-        }
+
         this.initCanvas();
     }
 
@@ -63,8 +58,21 @@ class RenderCanvas {
        let middleWorldY = Math.floor(this.worldHeight / 2);
        this.setCamera(middleWorldX, middleWorldY);
        console.log("Camera: ", this.cameraX, this.cameraY);
+       this.generateStars();
        this.drawBackground();
     } //end initCanvas
+
+    generateStars(){
+        for(var x=0;x<this.viewWidth;x++){
+            this.stars[x] = [];
+            for(var y=0;y<this.viewHeight;y++){
+                if(Math.random() < 0.0005){
+                    let size = (Math.random() * 2);
+                    this.stars[x][y] = size;
+                } else this.stars[x][y] = 0;
+            }
+        }
+    }
 
     zoomView(dir, mouseX, mouseY){
         var rect = this.viewCanvas.getBoundingClientRect();
