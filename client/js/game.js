@@ -1,17 +1,27 @@
+var DEBUG = {
+    input: true,
+    render: false,
+    GSM: true,
+};
 var renderCanvas = null;
 var input = null;
+var gameStateManager = null;
 
 function runWhenReady(){
     console.log("Run when Ready");
-    if(typeof RenderCanvas === 'undefined' || typeof Input === 'undefined'){
+    if(typeof RenderCanvas === 'undefined' ||
+       typeof Input === 'undefined' ||
+       typeof GameStateManager === 'undefined'){
         console.log("Not ready Yet");
         readyFlag = setTimeout(function(){
             runWhenReady();
         },100);
     } else {
         console.log("Finished loading");
+        gameStateManager = new GameStateManager();
+        if(DEBUG && DEBUG.GSM) gameStateManager.initalizeDebugObjects();
         renderCanvas = new RenderCanvas();
-        input = new Input(renderCanvas);
+        input = new Input();
         mainLoop();
     }
 } //run when ready

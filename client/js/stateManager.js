@@ -47,6 +47,7 @@ var gameState = {
             "../shared/EnergyNode.js",
             "../js/input.js",
             "../js/render.js",
+            "../js/gameStateManager.js",
             "../js/game.js"],
   name: "gameState",
   enter: ()=>{console.log("Entering state gameState");},

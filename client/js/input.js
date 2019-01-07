@@ -4,6 +4,11 @@ class Input {
         window.addEventListener('wheel', this.scrollEvent);
         window.addEventListener('keydown', this.keyPressDownEvent.bind(this));
         window.addEventListener('keyup', this.keyPressUpEvent.bind(this));
+        window.addEventListener('mousemove', this.mouseMoveEvent.bind(this));
+
+        //mouse
+        this.mouseX = null;
+        this.mouseY = null;
 
         //keypresses
         this.controls = {
@@ -41,6 +46,14 @@ class Input {
     keyPressUpEvent(e){
         // console.log("keypress Up: ", e.key);
         // console.log("keyPressUpEvent: ", e);
+    }
+
+    mouseMoveEvent(e){
+        // console.log(e.offsetX, e.offsetY);
+        this.mouseX = e.offsetX;
+        this.mouseY = e.offsetY;
+        renderCanvas.debug.mouseX = this.mouseX;
+        renderCanvas.debug.mouseY = this.mouseY;
     }
 
 }//input class
