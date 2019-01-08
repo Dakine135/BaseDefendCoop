@@ -12,10 +12,10 @@ class Input {
 
         //keypresses
         this.controls = {
-            w: (speed)=>{renderCanvas.panView(0,1,speed);},
-            a: (speed)=>{renderCanvas.panView(1,0,speed);},
-            s: (speed)=>{renderCanvas.panView(0,-1,speed);},
-            d: (speed)=>{renderCanvas.panView(-1,0,speed);}
+            w: (speed)=>{renderCanvas.panView(0,-1,speed);},
+            a: (speed)=>{renderCanvas.panView(-1,0,speed);},
+            s: (speed)=>{renderCanvas.panView(0,1,speed);},
+            d: (speed)=>{renderCanvas.panView(1,0,speed);}
         };
         this.cameraSpeed = 100;
 

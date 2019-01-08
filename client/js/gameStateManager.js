@@ -7,7 +7,7 @@ class GameStateManager{
         this.numOfTilesX = 1024;
         this.numOfTilesY = 1024;
         this.tilesPixelSize = 32;
-        this.worldPixelWidth = this.numOfTilesX * this.tilesPixelSize; //32,768
+        this.worldPixelWidth = this.numOfTilesX * this.tilesPixelSize; //32,768 middle is 16384
         this.worldPixelHeight = this.numOfTilesY * this.tilesPixelSize;
         this.margin = this.tilesPixelSize * 2;
 
@@ -53,8 +53,8 @@ class GameStateManager{
             strokeSize: 2
         });
 
-        let centerX = Math.floor((this.worldPixelWidth / 2) - (this.tilesPixelSize/2));
-        let centerY = Math.floor((this.worldPixelHeight / 2) - (this.tilesPixelSize/2));
+        let centerX = Math.floor((this.worldPixelWidth / 2));
+        let centerY = Math.floor((this.worldPixelHeight / 2));
         this.addObject("middle", centerX, centerY, "circle", {
             color: "blue",
             radius: (this.tilesPixelSize/2),

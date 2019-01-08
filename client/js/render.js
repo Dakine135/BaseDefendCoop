@@ -94,13 +94,13 @@ class RenderCanvas {
 
     panView(x,y,panSpeed){
         if(DEBUG && DEBUG.render) console.log("panView: ",x,y,panSpeed);
-        let cameraCenter = this.getCameraCenter();
-        // let moveToX = cameraCenter.x + (x * panSpeed);
-        // let moveToY = cameraCenter.y + (y * panSpeed);
+        // let cameraCenter = this.getCameraCenter();
+        let moveToX = this.cameraX + (x * panSpeed);
+        let moveToY = this.cameraY + (y * panSpeed);
         // let moveToX = cameraCenter.x;
         // let moveToY = cameraCenter.y;
         // this.setCamera(moveToX, moveToY);
-        this.setCameraCenter(this.cameraX, this.cameraY);
+        this.setCamera(moveToX, moveToY);
         if(DEBUG && DEBUG.render) console.log("panView:",
             this.cameraX, this.cameraY, "scale:", this.scaleFactor);
         // this.drawBackground();
@@ -125,10 +125,22 @@ class RenderCanvas {
       if(DEBUG && DEBUG.render) console.log("set Camera AFTER", this.cameraX, this.cameraY);
     }
 
+    setCamera(x,y){
+        this.cameraX = x;
+        this.cameraY = y;
+    }
+
     getCameraCenter(){
         let centerX = Math.floor(this.cameraX - (this.viewWidth / 2));
         let centerY = Math.floor(this.cameraY - (this.viewHeight / 2));
         return {x: centerX, y: centerY};
+    }
+
+    transWorldPosToScreenPos(x,y){
+        return {
+            x: x - this.cameraX,
+            y: y - this.cameraY
+        }
     }
 
     getMousePos(evt) {
@@ -186,54 +198,62 @@ class RenderCanvas {
             this.cameraX, this.cameraX + this.viewWidth,
             this.cameraY, this.cameraY + this.viewHeight);
 
-        // this.renderedObjects.forEach((object) => {
-        //     switch (object.type){
-        //         case "circle":
-        //             // console.log("Drawing:",object);
-        //             this.viewRender.save();
-        //             this.viewRender.beginPath();
-        //             this.viewRender.strokeStyle = "blue";
-        //             this.viewRender.strokeSize = 2;
-        //             // this.viewRender.arc(object.x, object.y, object.draw.radius,
-        //             //                     object.draw.start, object.draw.end);
-        //             this.viewRender.fillRect(500 ,500, 100, 100);
-        //             this.viewRender.stroke();
-        //             this.viewRender.closePath();
-        //             this.viewRender.restore();
-        //             break;
-        //         default:
-        //             console.log("Dont know how to draw object", object.type);
-        //     }
-        //
-        // });
+        this.renderedObjects.forEach((object) => {
+            switch (object.type){
+                case "circle":
+                    // console.log("Drawing:",object);
+                    this.viewRender.beginPath();
+                    this.viewRender.fillStyle = object.draw.color;
+                    this.viewRender.lineWidth = object.draw.strokeSize;
+                    let transPos = this.transWorldPosToScreenPos(object.x,object.y);
+                    this.viewRender.arc(transPos.x, transPos.y, object.draw.radius,
+                                        object.draw.start, object.draw.end);
+                    this.viewRender.fill();
+                    break;
+                case "rect":
+                    // console.log("Drawing:",object);
+                    this.viewRender.beginPath();
+                    this.viewRender.fillStyle = object.draw.color;
+                    this.viewRender.strokeSize = object.draw.strokeSize;
+                    let transPos = this.transWorldPosToScreenPos(object.x,object.y);
+                    this.viewRender.arc(transPos.x, transPos.y, object.draw.radius,
+                                        object.draw.start, object.draw.end);
+                    this.viewRender.fill();
+                    break;
 
-        this.viewRender.clearRect(0, 0, this.viewWidth, this.viewHeight);
-        this.viewRender.save();
+                default:
+                    console.log("Dont know how to draw object", object.type);
+            }
+
+        });
+
+        // this.viewRender.clearRect(0, 0, this.viewWidth, this.viewHeight);
+        // this.viewRender.save();
         // this.viewRender.translate(-this.cameraX, -this.cameraY);
         // this.viewRender.scale(this.scaleFactor, this.scaleFactor);
         //world edge
-        this.viewRender.strokeStyle = "red";
-        this.viewRender.strokeSize = "2";
-        let size = gameStateManager.worldPixelWidth - 200;
-        this.viewRender.rect(100 ,100, size, size);
-        this.viewRender.stroke();
+        // this.viewRender.strokeStyle = "red";
+        // this.viewRender.strokeSize = "2";
+        // let size = gameStateManager.worldPixelWidth - (gameStateManager.margin*2);
+        // this.viewRender.rect(100 ,100, size, size);
+        // this.viewRender.stroke();
 
-        this.viewRender.beginPath();
-        this.viewRender.fillStyle = "white";
-        this.viewRender.fillRect(-500 ,-500, this.tilesPixelSize, this.tilesPixelSize);
-        this.viewRender.fillStyle = "green";
-        this.viewRender.fillRect(100 ,100, this.tilesPixelSize, this.tilesPixelSize);
-        this.viewRender.fillStyle = "red";
-        this.viewRender.fillRect(1000 , 1000, this.tilesPixelSize, this.tilesPixelSize);
-        this.viewRender.fillStyle = "blue";
-        let recX = Math.floor((gameStateManager.worldPixelWidth / 2) - (this.tilesPixelSize/2));
-        let recY = Math.floor((gameStateManager.worldPixelHeight / 2) - (this.tilesPixelSize/2));
-        this.viewRender.fillRect(recX , recY, this.tilesPixelSize, this.tilesPixelSize);
-        this.viewRender.fillStyle = "yellow";
-        this.viewRender.fillRect(gameStateManager.worldPixelWidth - (gameStateManager.margin*2) ,
-                gameStateManager.worldPixelHeight - (gameStateManager.margin*2), this.tilesPixelSize, this.tilesPixelSize);
-        this.viewRender.closePath();
-        this.viewRender.restore();
+        // this.viewRender.beginPath();
+        // this.viewRender.fillStyle = "white";
+        // this.viewRender.fillRect(-500 ,-500, gameStateManager.tilesPixelSize, gameStateManager.tilesPixelSize);
+        // this.viewRender.fillStyle = "green";
+        // this.viewRender.fillRect(100 ,100, gameStateManager.tilesPixelSize, gameStateManager.tilesPixelSize);
+        // this.viewRender.fillStyle = "red";
+        // this.viewRender.fillRect(1000 , 1000, gameStateManager.tilesPixelSize, gameStateManager.tilesPixelSize);
+        // this.viewRender.fillStyle = "blue";
+        // let recX = Math.floor((gameStateManager.worldPixelWidth / 2) - (gameStateManager.tilesPixelSize/2));
+        // let recY = Math.floor((gameStateManager.worldPixelHeight / 2) - (gameStateManager.tilesPixelSize/2));
+        // this.viewRender.fillRect(recX , recY, gameStateManager.tilesPixelSize, gameStateManager.tilesPixelSize);
+        // this.viewRender.fillStyle = "yellow";
+        // this.viewRender.fillRect(gameStateManager.worldPixelWidth - (gameStateManager.margin*2) ,
+        //         gameStateManager.worldPixelHeight - (gameStateManager.margin*2), gameStateManager.tilesPixelSize, gameStateManager.tilesPixelSize);
+        // this.viewRender.closePath();
+        // this.viewRender.restore();
     }
 
     drawGui(){
