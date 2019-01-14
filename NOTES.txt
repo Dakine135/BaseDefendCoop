@@ -1,0 +1,4 @@
+Look up and think about using jsdoc to help make documentation
+
+TODO:
+Need a compiler/bundler to put together the javascript.
