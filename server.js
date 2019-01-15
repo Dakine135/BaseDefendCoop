@@ -1,11 +1,12 @@
 //NPM PACKAGES
 var express = require('express');
 var socket = require('socket.io');
+var reload = require('reload');
 
 //my classes or files
 // var GameState = require('./serverGameState.js');
 // var GLOBALS = require('./GLOBALS.js');
-var Engine = require('./gameEngine/main.js');
+var Engine = require('./serverEngineSrc/main.js');
 var EnergyNode = require('./client/shared/EnergyNode');
 let testNode = new EnergyNode.init("stringConstructor");
 let testNode2 = new EnergyNode.init("dasfasdf");
@@ -20,6 +21,7 @@ var io = socket(server);
 // GAMESTATE.setup();
 
 app.use(express.static('./client'));
+reload(app);
 console.log("BaseDefendCoop server running");
 
 

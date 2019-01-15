@@ -1,15 +1,13 @@
-class GameStateManager{
-    constructor(){
+export default class GameStateManager{
+    constructor(config){
 
         this.objects = [];
 
         //World Stuff
-        this.numOfTilesX = 1024;
-        this.numOfTilesY = 1024;
-        this.tilesPixelSize = 32;
-        this.worldPixelWidth = this.numOfTilesX * this.tilesPixelSize; //32,768 middle is 16384
-        this.worldPixelHeight = this.numOfTilesY * this.tilesPixelSize;
-        this.margin = this.tilesPixelSize * 2;
+        this.tilesPixelSize = config.tilesPixelSize;
+        this.worldPixelWidth = config.worldPixelWidth;
+        this.worldPixelHeight = config.worldPixelWidth;
+        this.margin = config.worldPixelWidth;
 
         console.log("GameStateManager running");
     }

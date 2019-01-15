@@ -2,10 +2,12 @@
   "name": "basedefendcoop",
   "version": "1.0.0",
   "description": "Base Network Multiplayer Coop defense rescource game",
+  "private": true,
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js",
+    "dev": "nodemon",
+    "build": "npx webpack --config webpack.config.js",
     "start": "node server.js"
   },
   "repository": {
@@ -30,7 +32,22 @@
   "dependencies": {
     "express": "^4.16.4",
     "node-gameloop": "^0.1.4",
-    "nodemon": "^1.18.7",
     "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9",
+    "reload": "^2.4.0",
+    "webpack": "^4.28.4",
+    "webpack-cli": "^3.2.1"
+  },
+  "nodemonConfig": {
+    "verbose": true,
+    "ignore": [
+      "client/js/clientGame.js"
+    ],
+    "events": {
+      "restart": "npm run build",
+      "start": "npm run build"
+    }
   }
 }
