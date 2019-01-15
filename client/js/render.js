@@ -78,7 +78,6 @@ class RenderCanvas {
         var rect = this.viewCanvas.getBoundingClientRect();
         var x = mouseX - rect.left;
         var y = mouseY - rect.top;
-        // console.log("mouse: %s,%s",x,y);
         // this.cameraX = Math.round(x/2) - this.viewWidth;
         // this.cameraY = Math.round(y/2) - this.viewHeight;
         // this.scaleFactor = this.scaleFactor + (Math.sign(dir) * 0.5);
@@ -101,10 +100,10 @@ class RenderCanvas {
         let marginH = Math.floor((this.viewHeight) + gameStateManager.margin);
         let widthUpperBound = gameStateManager.worldPixelWidth - marginW;
         let heightUpperBound = gameStateManager.worldPixelHeight - marginH;
-        if(centerX < marginW) centerX = marginW;
-        if(centerX > widthUpperBound) centerX = widthUpperBound;
-        if(centerY < marginH) centerY = marginH;
-        if(centerY > heightUpperBound) centerY = heightUpperBound;
+        if(moveToX < gameStateManager.margin) moveToX = gameStateManager.margin;
+        if(moveToX > widthUpperBound) moveToX = widthUpperBound;
+        if(moveToY < gameStateManager.margin) moveToY = gameStateManager.margin;
+        if(moveToY > heightUpperBound) moveToY = heightUpperBound;
         this.setCamera(moveToX, moveToY);
         if(DEBUG && DEBUG.render) console.log("panView:",
             this.cameraX, this.cameraY, "scale:", this.scaleFactor);
@@ -117,14 +116,6 @@ class RenderCanvas {
       if(DEBUG && DEBUG.render) console.log("setCamera:", x, y);
       let centerX = Math.floor(x - (this.viewWidth / 2));
       let centerY = Math.floor(y - (this.viewHeight / 2));
-      // let marginW = Math.floor((this.viewWidth / 2) + gameStateManager.margin);
-      // let marginH = Math.floor((this.viewHeight / 2) + gameStateManager.margin);
-      // let widthUpperBound = gameStateManager.worldPixelWidth - marginW;
-      // let heightUpperBound = gameStateManager.worldPixelHeight - marginH;
-      // if(centerX < marginW) centerX = marginW;
-      // if(centerX > widthUpperBound) centerX = widthUpperBound;
-      // if(centerY < marginH) centerY = marginH;
-      // if(centerY > heightUpperBound) centerY = heightUpperBound;
       this.cameraX = centerX;
       this.cameraY = centerY;
       if(DEBUG && DEBUG.render) console.log("set Camera AFTER", this.cameraX, this.cameraY);
