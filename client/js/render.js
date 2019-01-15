@@ -97,9 +97,14 @@ class RenderCanvas {
         // let cameraCenter = this.getCameraCenter();
         let moveToX = this.cameraX + (x * panSpeed);
         let moveToY = this.cameraY + (y * panSpeed);
-        // let moveToX = cameraCenter.x;
-        // let moveToY = cameraCenter.y;
-        // this.setCamera(moveToX, moveToY);
+        let marginW = Math.floor((this.viewWidth) + gameStateManager.margin);
+        let marginH = Math.floor((this.viewHeight) + gameStateManager.margin);
+        let widthUpperBound = gameStateManager.worldPixelWidth - marginW;
+        let heightUpperBound = gameStateManager.worldPixelHeight - marginH;
+        if(centerX < marginW) centerX = marginW;
+        if(centerX > widthUpperBound) centerX = widthUpperBound;
+        if(centerY < marginH) centerY = marginH;
+        if(centerY > heightUpperBound) centerY = heightUpperBound;
         this.setCamera(moveToX, moveToY);
         if(DEBUG && DEBUG.render) console.log("panView:",
             this.cameraX, this.cameraY, "scale:", this.scaleFactor);
@@ -199,13 +204,14 @@ class RenderCanvas {
             this.cameraY, this.cameraY + this.viewHeight);
 
         this.renderedObjects.forEach((object) => {
+          let transPos = {};
             switch (object.type){
                 case "circle":
                     // console.log("Drawing:",object);
                     this.viewRender.beginPath();
                     this.viewRender.fillStyle = object.draw.color;
                     this.viewRender.lineWidth = object.draw.strokeSize;
-                    let transPos = this.transWorldPosToScreenPos(object.x,object.y);
+                    transPos = this.transWorldPosToScreenPos(object.x,object.y);
                     this.viewRender.arc(transPos.x, transPos.y, object.draw.radius,
                                         object.draw.start, object.draw.end);
                     this.viewRender.fill();
@@ -215,7 +221,7 @@ class RenderCanvas {
                     this.viewRender.beginPath();
                     this.viewRender.fillStyle = object.draw.color;
                     this.viewRender.strokeSize = object.draw.strokeSize;
-                    let transPos = this.transWorldPosToScreenPos(object.x,object.y);
+                    transPos = this.transWorldPosToScreenPos(object.x,object.y);
                     this.viewRender.arc(transPos.x, transPos.y, object.draw.radius,
                                         object.draw.start, object.draw.end);
                     this.viewRender.fill();
