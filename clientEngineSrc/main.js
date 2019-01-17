@@ -10,7 +10,7 @@ export default class ClientGameEngine {
 
         this.gameStateManager = new GameStateManager(config);
         if(this.config.DEBUG && this.config.DEBUG.GSM) this.gameStateManager.initalizeDebugObjects();
-        this.renderCanvas = new RenderCanvas(config);
+        this.render = new RenderCanvas(config);
         this.input = new Input(config);
 
         // let testNode = new EnergyNode.init("string in browser");
@@ -39,25 +39,20 @@ export default class ClientGameEngine {
     mainLoop(){
         // console.log("-----------Mainloop----------");
         //process real-time stats
-        let now = new Date().getTime();
-        this.deltaTime = now - this.lastFrameTime;
-        this.lastFrameTime = now;
-        this.everySecondCountDown = this.everySecondCountDown - this.deltaTime;
-        this.frames++;
-        if(this.everySecondCountDown < 0){
-            this.avgFPS = Math.round((this.frames * 0.8) + (this.avgFPS * 0.2));
-            this.frames = 0;
-            this.everySecondCountDown = 1000;
-            // renderCanvas.drawBackground();
-        }
+        this.processDeltaTime();
 
         //get and process client Input
-        this.userInput = this.input.getInput();
-        this.userInput.forEach((UserAction)=>{
-                console.log(UserAction);
-                // this.rendeUserAction
+        this.processUserActions();
 
-        });
+        //update debugInfo
+        let mouseInfo = this.input.getMouse();
+        let debugInfoInput = {
+          mouseX: mouseInfo.x,
+          mouseY: mouseInfo.y,
+          avgFPS: this.avgFPS,
+          deltaTime: this.deltaTime
+        }
+        this.render.updateDebugInfo(debugInfoInput);
 
         //process latest server update if any
 
@@ -71,16 +66,43 @@ export default class ClientGameEngine {
 
         //get objects to Render in View
         let objectsToRender = this.gameStateManager.getObjectsInRange(
-            this.renderCanvas.cameraX, this.renderCanvas.cameraX + this.renderCanvas.viewWidth,
-            this.renderCanvas.cameraY, this.renderCanvas.cameraY + this.renderCanvas.viewHeight);
+            this.render.cameraX, this.render.cameraX + this.render.viewWidth,
+            this.render.cameraY, this.render.cameraY + this.render.viewHeight);
         //render frame
-        this.renderCanvas.drawView(objectsToRender);
+        this.render.drawView(objectsToRender);
 
 
-        this.renderCanvas.drawGui({
-            avgFPS: this.avgFPS,
-            deltaTime: this.deltaTime
-        });
+        this.render.drawGui();
         window.requestAnimationFrame(this.mainLoop.bind(this));
+    }//mainLoop
+
+    processDeltaTime(){
+      let now = new Date().getTime();
+      this.deltaTime = now - this.lastFrameTime;
+      this.lastFrameTime = now;
+      this.everySecondCountDown = this.everySecondCountDown - this.deltaTime;
+      this.frames++;
+      if(this.everySecondCountDown < 0){
+          this.avgFPS = Math.round((this.frames * 0.8) + (this.avgFPS * 0.2));
+          this.frames = 0;
+          this.everySecondCountDown = 1000;
+          // renderCanvas.drawBackground();
+      }
+    }//processDeltaTime
+
+    processUserActions(){
+      this.userInput = this.input.getInput();
+      this.userInput.forEach((userAction)=>{
+              // console.log(userAction);
+              switch(userAction.action){
+                case "panCamera":
+                  this.render.panView(userAction.input);
+                  break;
+                default:
+                  console.log("unknown user action");
+              }
+              this.render
+      });
+      this.input.update();
     }
-}
+}//Client Game Engine class

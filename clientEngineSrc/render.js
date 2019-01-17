@@ -14,20 +14,20 @@ export default class RenderCanvas {
         this.scaleFactor = 1.00;
         this.cameraX = 0;
         this.cameraY = 0;
+        this.cameraSpeedMax = 20;
 
         //background stars
         this.stars = [];
 
         //debug
-        this.debug = {
+        this.debugInfo = {
             mouseX: 0,
-            mouseY: 0
+            mouseY: 0,
+            avgFPS: 0,
+            deltaTime:0
         }
 
-        this.DEBUG = config.DEBUG;
-
-        this.worldPixelWidth = config.worldPixelWidth;
-        this.worldPixelHeight = config.worldPixelHeight;
+        this.config = config;
 
         this.renderedObjects = [];
 
@@ -59,8 +59,8 @@ export default class RenderCanvas {
        // console.log("view: ", this.viewWidth, this.viewHeight);
        // this.cameraX = (this.worldWidth / 2) - (this.viewWidth / 2);
        // this.cameraY = (this.worldHeight / 2) - (this.viewHeight / 2);
-       let middleWorldX = Math.floor(this.worldPixelWidth / 2);
-       let middleWorldY = Math.floor(this.worldPixelHeight / 2);
+       let middleWorldX = Math.floor(this.config.worldPixelWidth / 2);
+       let middleWorldY = Math.floor(this.config.worldPixelHeight / 2);
        this.setCameraCenter(middleWorldX, middleWorldY);
        // console.log("Camera: ", this.cameraX, this.cameraY);
        this.generateStars();
@@ -91,40 +91,42 @@ export default class RenderCanvas {
         // if(this.scaleFactor > 3) this.scaleFactor = 3;
         // this.cameraX = this.viewWidth / 2;
         // this.cameraY = this.viewHeight / 2;
-        if(this.DEBUG && this.DEBUG.render) console.log("zoom: ",
+        if(this.config.DEBUG && this.config.DEBUG.render) console.log("zoom: ",
             this.scaleFactor, this.cameraX, this.cameraY);
         // this.drawBackground();
     }
 
-    panView(x,y){
-        let panSpeed = 100;
-        if(this.DEBUG && this.DEBUG.render) console.log("panView: ",x,y,panSpeed);
-        // let cameraCenter = this.getCameraCenter();
-        let moveToX = this.cameraX + (x * panSpeed);
-        let moveToY = this.cameraY + (y * panSpeed);
-        let marginW = Math.floor((this.viewWidth) + gameStateManager.margin);
-        let marginH = Math.floor((this.viewHeight) + gameStateManager.margin);
-        let widthUpperBound = this.worldPixelWidth - marginW;
-        let heightUpperBound = this.worldPixelHeight - marginH;
-        if(moveToX < gameStateManager.margin) moveToX = gameStateManager.margin;
+    panView({x,y,heldCount}){
+        let panSpeed = Math.floor((heldCount/10));
+        if(panSpeed < 2) panSpeed = 2;
+        else if(panSpeed > this.cameraSpeedMax) panSpeed = this.cameraSpeedMax;
+        console.log(panSpeed, heldCount);
+        if(this.config.DEBUG && this.config.DEBUG.render) console.log("panView: ",x,y,panSpeed);
+        let moveToX = Math.floor(this.cameraX + (x * panSpeed));
+        let moveToY = Math.floor(this.cameraY + (y * panSpeed));
+        let marginW = Math.floor((this.viewWidth) + this.config.margin);
+        let marginH = Math.floor((this.viewHeight) + this.config.margin);
+        let widthUpperBound = this.config.worldPixelWidth - marginW;
+        let heightUpperBound = this.config.worldPixelHeight - marginH;
+        if(moveToX < this.config.margin) moveToX = this.config.margin;
         if(moveToX > widthUpperBound) moveToX = widthUpperBound;
-        if(moveToY < gameStateManager.margin) moveToY = gameStateManager.margin;
+        if(moveToY < this.config.margin) moveToY = this.config.margin;
         if(moveToY > heightUpperBound) moveToY = heightUpperBound;
         this.setCamera(moveToX, moveToY);
-        if(this.DEBUG && this.DEBUG.render) console.log("panView:",
+        if(this.config.DEBUG && this.config.DEBUG.render) console.log("panView:",
             this.cameraX, this.cameraY, "scale:", this.scaleFactor);
         // this.drawBackground();
     }
 
     //Sets camera center at position in gameWorld
     setCameraCenter(x, y){
-      if(this.DEBUG && this.DEBUG.render) console.log("set Camera BEFORE", this.cameraX, this.cameraY);
-      if(this.DEBUG && this.DEBUG.render) console.log("setCamera:", x, y);
+      if(this.config.DEBUG && this.config.DEBUG.render) console.log("set Camera BEFORE", this.cameraX, this.cameraY);
+      if(this.config.DEBUG && this.config.DEBUG.render) console.log("setCamera:", x, y);
       let centerX = Math.floor(x - (this.viewWidth / 2));
       let centerY = Math.floor(y - (this.viewHeight / 2));
       this.cameraX = centerX;
       this.cameraY = centerY;
-      if(this.DEBUG && this.DEBUG.render) console.log("set Camera AFTER", this.cameraX, this.cameraY);
+      if(this.config.DEBUG && this.config.DEBUG.render) console.log("set Camera AFTER", this.cameraX, this.cameraY);
     }
 
     setCamera(x,y){
@@ -151,6 +153,14 @@ export default class RenderCanvas {
           x: evt.clientX - rect.left,
           y: evt.clientY - rect.top
         };
+    }
+
+    updateDebugInfo(input){
+      // console.log(input);
+      if(input.mouseX) this.debugInfo.mouseX = input.mouseX;
+      if(input.mouseY) this.debugInfo.mouseY = input.mouseY;
+      if(input.avgFPS) this.debugInfo.avgFPS = input.avgFPS;
+      if(input.deltaTime) this.debugInfo.deltaTime = input.deltaTime;
     }
 
     drawBackground(){
@@ -235,29 +245,29 @@ export default class RenderCanvas {
         //world edge
         // this.viewRender.strokeStyle = "red";
         // this.viewRender.strokeSize = "2";
-        // let size = this.worldPixelWidth - (gameStateManager.margin*2);
+        // let size = this.config.worldPixelWidth - (this.config.margin*2);
         // this.viewRender.rect(100 ,100, size, size);
         // this.viewRender.stroke();
 
         // this.viewRender.beginPath();
         // this.viewRender.fillStyle = "white";
-        // this.viewRender.fillRect(-500 ,-500, gameStateManager.tilesPixelSize, gameStateManager.tilesPixelSize);
+        // this.viewRender.fillRect(-500 ,-500, this.config.tilesPixelSize, this.config.tilesPixelSize);
         // this.viewRender.fillStyle = "green";
-        // this.viewRender.fillRect(100 ,100, gameStateManager.tilesPixelSize, gameStateManager.tilesPixelSize);
+        // this.viewRender.fillRect(100 ,100, this.config.tilesPixelSize, this.config.tilesPixelSize);
         // this.viewRender.fillStyle = "red";
-        // this.viewRender.fillRect(1000 , 1000, gameStateManager.tilesPixelSize, gameStateManager.tilesPixelSize);
+        // this.viewRender.fillRect(1000 , 1000, this.config.tilesPixelSize, this.config.tilesPixelSize);
         // this.viewRender.fillStyle = "blue";
-        // let recX = Math.floor((this.worldPixelWidth / 2) - (gameStateManager.tilesPixelSize/2));
-        // let recY = Math.floor((this.worldPixelHeight / 2) - (gameStateManager.tilesPixelSize/2));
-        // this.viewRender.fillRect(recX , recY, gameStateManager.tilesPixelSize, gameStateManager.tilesPixelSize);
+        // let recX = Math.floor((this.config.worldPixelWidth / 2) - (this.config.tilesPixelSize/2));
+        // let recY = Math.floor((this.config.worldPixelHeight / 2) - (this.config.tilesPixelSize/2));
+        // this.viewRender.fillRect(recX , recY, this.config.tilesPixelSize, this.config.tilesPixelSize);
         // this.viewRender.fillStyle = "yellow";
-        // this.viewRender.fillRect(this.worldPixelWidth - (gameStateManager.margin*2) ,
-        //         this.worldPixelHeight - (gameStateManager.margin*2), gameStateManager.tilesPixelSize, gameStateManager.tilesPixelSize);
+        // this.viewRender.fillRect(this.config.worldPixelWidth - (this.config.margin*2) ,
+        //         this.config.worldPixelHeight - (this.config.margin*2), this.config.tilesPixelSize, this.config.tilesPixelSize);
         // this.viewRender.closePath();
         // this.viewRender.restore();
     }
 
-    drawGui(info){
+    drawGui(){
         //clear the game canvas
         this.hudRender.save();
         // this.hudRender.setTransform(1, 0, 0, 1, 0, 0);
@@ -269,16 +279,8 @@ export default class RenderCanvas {
         let centerX = this.viewWidth / 2;
         let centerY = this.viewHeight / 2;
         let size = 20;
-        this.hudRender.strokeSize = 2;
-        this.hudRender.strokeStyle = "pink";
-        this.hudRender.beginPath();
-        this.hudRender.moveTo(centerX + size, centerY);
-        this.hudRender.lineTo(centerX - size, centerY);
-        this.hudRender.stroke();
-        this.hudRender.beginPath();
-        this.hudRender.moveTo(centerX, centerY + size);
-        this.hudRender.lineTo(centerX, centerY - size);
-        this.hudRender.stroke();
+        this.drawCrosshair(centerX, centerY, size);
+        this.drawCrosshair(this.debugInfo.mouseX, this.debugInfo.mouseY, 10);
 
         //upperLeft Debug Stats
         this.hudRender.save();
@@ -286,16 +288,16 @@ export default class RenderCanvas {
         let currentYFont = 20;
         this.hudRender.font = "20px Arial";
         this.hudRender.fillStyle = "orange";
-        this.hudRender.fillText("FPS:"+info.avgFPS, 0, currentYFont);
+        this.hudRender.fillText("FPS:"+this.debugInfo.avgFPS, 0, currentYFont);
         currentYFont = currentYFont + spaceing;
-        this.hudRender.fillText("DeltaTime:"+info.deltaTime, 0, currentYFont);
+        this.hudRender.fillText("DeltaTime:"+this.debugInfo.deltaTime, 0, currentYFont);
         currentYFont = currentYFont + spaceing;
         this.hudRender.fillText("Ping: ping", 0, currentYFont);
         currentYFont = currentYFont + spaceing;
-        this.hudRender.fillText("MouseView:"+this.debug.mouseX+","+this.debug.mouseY, 0, currentYFont);
+        this.hudRender.fillText("MouseView:"+this.debugInfo.mouseX+","+this.debugInfo.mouseY, 0, currentYFont);
         currentYFont = currentYFont + spaceing;
-        this.hudRender.fillText("MouseWorld:"+(this.debug.mouseX + this.cameraX)+","+
-                                              (this.debug.mouseY + this.cameraY), 0, currentYFont);
+        this.hudRender.fillText("MouseWorld:"+(this.debugInfo.mouseX + this.cameraX)+","+
+                                              (this.debugInfo.mouseY + this.cameraY), 0, currentYFont);
         currentYFont = currentYFont + spaceing;
         this.hudRender.fillText("ViewSize:"+this.viewWidth+","+this.viewHeight, 0, currentYFont);
         currentYFont = currentYFont + spaceing;
@@ -304,6 +306,19 @@ export default class RenderCanvas {
         this.hudRender.fillText("RenderedObjects:"+this.renderedObjects.length, 0, currentYFont);
         currentYFont = currentYFont + spaceing;
         this.hudRender.restore();
+    }
+
+    drawCrosshair(x,y,size){
+      this.hudRender.strokeSize = 2;
+      this.hudRender.strokeStyle = "pink";
+      this.hudRender.beginPath();
+      this.hudRender.moveTo(x + size, y);
+      this.hudRender.lineTo(x - size, y);
+      this.hudRender.stroke();
+      this.hudRender.beginPath();
+      this.hudRender.moveTo(x, y + size);
+      this.hudRender.lineTo(x, y - size);
+      this.hudRender.stroke();
     }
 
 }//RenderCanvas class
