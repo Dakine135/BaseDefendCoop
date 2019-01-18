@@ -111,7 +111,7 @@ export default class Input {
     }
 
     keyPressUpEvent(e){
-        // console.log("keypress Up: ", e.key);
+        console.log("keypress Up: ", e.key);
         // console.log("keyPressUpEvent: ", e);
         if(typeof this.controls[e.key] === 'undefined'){
             console.log("Key not in use");
