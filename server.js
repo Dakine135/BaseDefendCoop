@@ -25,8 +25,10 @@ reload(app);
 console.log("BaseDefendCoop server running");
 
 
-var ticRate = 20;
-var game = new Engine(ticRate);
+let serverEngineOptions = {
+  tickRate: 20
+}
+var game = new Engine(serverEngineOptions);
 game.start();
 
 
