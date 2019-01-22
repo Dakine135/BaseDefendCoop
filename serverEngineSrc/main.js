@@ -33,21 +33,22 @@ class Engine {
     if(!this.running) return;
 
     let now = this.getCurrentTimeInNanoseconds();
-    this.acumulatedTime = this.acumulatedTime + now;
-
 
     if(now >= this.targertNextTickTime){
       let deltaTime = now - this.previousTime;
-      if((this.tickCount % 100) == 0){
-        console.log('GameTick=%s, acumulatedTime=%s', this.tickCount, (this.acumulatedTime * this.nanosecondsIntoMiliseconds));
-      }
+      this.acumulatedTime = this.acumulatedTime + deltaTime;
+
       this.previousTime = now;
       this.targertNextTickTime = now + this.ticRate;
       //run update
       while(this.acumulatedTime >= this.ticRate){
         this.tickCount++;
-        this.update();
         this.acumulatedTime = this.acumulatedTime - this.ticRate;
+        if((this.tickCount % 1) == 0){
+          console.log('GameTick=%s, deltaTime=%s', this.tickCount, (deltaTime * this.nanosecondsIntoMiliseconds));
+        }
+        this.update();
+
       }
     }
 
@@ -59,26 +60,6 @@ class Engine {
   start(){
     this.running = true;
     this.mainLoop();
-
-    // this.id = gameloop.setGameLoop(function(lastTickDelta) {
-    //     // `delta` is the delta time from the last frame
-    //     delta += (lastTickDelta * 1000);
-    //     this.tickCount++;
-    //
-    //     if(this.tickCount % (this.ticRate * 10) == 0){
-    //       //every 10 seconds
-    //       console.log('GameTick=%s, deltaTime=%s', this.tickCount, delta);
-    //     }
-    //
-    //     // Simulate the total elapsed time in fixed-size chunks
-    //     while (delta >= TIMESTEP) {
-    //         // GAMESTATE.update(TIMESTEP);
-    //         delta -= TIMESTEP;
-    //     }
-    //
-    // }.bind(this), TIMESTEP);
-
-
   }//end start function
 
   stop(){

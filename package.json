@@ -37,7 +37,7 @@
   "devDependencies": {
     "nodemon": "^1.18.9",
     "reload": "^2.4.0",
-    "webpack": "^4.28.4",
+    "webpack": "^4.29.0",
     "webpack-cli": "^3.2.1"
   },
   "nodemonConfig": {
@@ -46,8 +46,8 @@
       "client/js/clientGame.js"
     ],
     "events": {
-      "restart": "npm run build",
-      "start": "npm run build"
+      "OFFrestart": "npm run build",
+      "OFFstart": "npm run build"
     }
   }
 }
