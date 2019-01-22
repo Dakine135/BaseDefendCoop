@@ -1,56 +1,74 @@
-// var Engine = require('./serverGameEngine.js');
+class Engine {
+  constructor({
+    ticRate=20
+  }){
+    console.log("create game instance tickRate is %s",ticRate);
+    this.id = null;
+    this.tickCount = 0;
+    this.timeStep = 1000 / this.ticRate;
+    this.running = false;
 
-class GameManager{
-    constructor(){
-        console.log("Starting Game Manager");
+    this.secondsIntoNanoseconds = 1e9;
+    this.nanosecondsIntoSeconds = 1 / this.secondsIntoNanoseconds;
+    this.millisecondsIntoNanoseconds = 1e6;
+    this.nanosecondsIntoMiliseconds = 1/this.millisecondsIntoNanoseconds;
 
+    //for MainLoop
+    this.ticRate = ticRate * this.millisecondsIntoNanoseconds;
+    this.previousTime = this.getCurrentTimeInNanoseconds();
+    this.targertNextTickTime = this.getCurrentTimeInNanoseconds();
+    this.acumulatedTime = 0;
+  }
 
-        /*
-        --Events--
-        disconnect    parent process manually calls the child.disconnect function
-        error         process could not be spawned or killed
-        close         stdio streams of a child process get closed
-        message       process.send()
-        exit
+  getCurrentTimeInNanoseconds() {
+    //see https://nodejs.org/api/process.html#process_process_hrtime_time
+    var hrtime = process.hrtime();
+    return (+hrtime[0]) * this.secondsIntoNanoseconds + (+hrtime[1]);
+  }
 
-        --stdio streams--
-         child.stdin,
-         child.stdout, and
-         child.stderr
-        */
-        const { fork } = require('child_process');
-        const child = fork('serverGameEngine.js');
+  mainLoop(){
+    if(!this.running) return;
 
-        child.on('message', (msg) => {
-          console.log('Message from child', msg);
-        });
+    let now = this.getCurrentTimeInNanoseconds();
 
-        child.send({ hello: 'world' });
+    if(now >= this.targertNextTickTime){
+      let deltaTime = now - this.previousTime;
+      this.acumulatedTime = this.acumulatedTime + deltaTime;
 
+      this.previousTime = now;
+      this.targertNextTickTime = now + this.ticRate;
+      //run update
+      while(this.acumulatedTime >= this.ticRate){
+        this.tickCount++;
+        this.acumulatedTime = this.acumulatedTime - this.ticRate;
+        if((this.tickCount % 1) == 0){
+          console.log('GameTick=%s, deltaTime=%s', this.tickCount, (deltaTime * this.nanosecondsIntoMiliseconds));
+        }
+        this.update();
 
-        // child.stdout.on('data', (data) => {
-        //   console.log(`child stdout:\n${data}`);
-        // });
-        //
-        // // child.stderr.on('data', (data) => {
-        // //   console.error(`child stderr:\n${data}`);
-        // // });
-        // child.on('exit', function (code, signal) {
-        //   console.log('child process exited with ' +
-        //               `code ${code} and signal ${signal}`);
-        // });
+      }
+    }
 
-        //setup game instance
-        // let serverEngineOptions = {
-        //   tickRate: 20
-        // }
-        // var game = new Engine(serverEngineOptions);
-        // game.start();
+    let remainingTimeInTick = this.targertNextTickTime - this.getCurrentTimeInNanoseconds();
+		setTimeout(this.mainLoop.bind(this), (this.tickRate * this.nanosecondsIntoMiliseconds));
 
+  }//end mainLoop
 
+  start(){
+    this.running = true;
+    this.mainLoop();
+  }//end start function
 
-    }//end constructor
+  stop(){
+    //stop the loop
+    this.running = false;
+    // gameloop.clearGameLoop(this.id);
+  }
 
-}
+  update(){
+    // console.log("No update function defined yet");
+  }
 
-module.exports = GameManager;
+}//end class Engine
+
+module.exports = Engine;

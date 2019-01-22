@@ -4,7 +4,7 @@ var socket = require('socket.io');
 var reload = require('reload');
 
 //My classes or files
-var GameManager = require('./serverEngineSrc/main.js');
+var Engine = require('./serverEngineSrc/main.js');
 var EnergyNode = require('./client/shared/EnergyNode');
 let testNode = new EnergyNode.init("stringConstructor");
 let testNode2 = new EnergyNode.init("dasfasdf");
@@ -19,7 +19,11 @@ app.use(express.static('./client'));
 reload(app);
 console.log("BaseDefendCoop server running");
 
-var gameManager = new GameManager();
+let config = {
+    ticRate: 20
+}
+var game = new Engine(config);
+game.start();
 
 
 io.sockets.on('connection', newConnection);
