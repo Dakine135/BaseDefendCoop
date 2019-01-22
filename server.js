@@ -3,33 +3,23 @@ var express = require('express');
 var socket = require('socket.io');
 var reload = require('reload');
 
-//my classes or files
-// var GameState = require('./serverGameState.js');
-// var GLOBALS = require('./GLOBALS.js');
-var Engine = require('./serverEngineSrc/main.js');
+//My classes or files
+var GameManager = require('./serverEngineSrc/main.js');
 var EnergyNode = require('./client/shared/EnergyNode');
 let testNode = new EnergyNode.init("stringConstructor");
 let testNode2 = new EnergyNode.init("dasfasdf");
 console.log(testNode.toString());
 console.log(testNode2.toString());
 
+//setup Server
 var app = express();
 var server = app.listen(3033);
 var io = socket(server);
-
-// var GAMESTATE = new GameState(paper);
-// GAMESTATE.setup();
-
 app.use(express.static('./client'));
 reload(app);
 console.log("BaseDefendCoop server running");
 
-
-let serverEngineOptions = {
-  tickRate: 20
-}
-var game = new Engine(serverEngineOptions);
-game.start();
+var gameManager = new GameManager();
 
 
 io.sockets.on('connection', newConnection);
