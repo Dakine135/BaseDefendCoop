@@ -10,7 +10,7 @@ let margin = tilesPixelSize * 2;
 let DEBUG = {
     input: true,
     render: false,
-    GSM: true,
+    GSM: false,
 };
 
 var config = {

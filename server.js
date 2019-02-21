@@ -4,7 +4,7 @@ var socket = require('socket.io');
 var reload = require('reload');
 
 //My classes or files
-var Engine = require('./serverEngineSrc/main.js');
+var BaseDefendCoop = require('./serverGameSrc/BaseDefendCoop.js');
 var EnergyNode = require('./client/shared/EnergyNode');
 let testNode = new EnergyNode.init("stringConstructor");
 let testNode2 = new EnergyNode.init("dasfasdf");
@@ -19,11 +19,9 @@ app.use(express.static('./client'));
 reload(app);
 console.log("BaseDefendCoop server running");
 
-let config = {
-    ticRate: 20
-}
-var game = new Engine(config);
-game.start();
+
+var baseDefenseCoopGame = new BaseDefendCoop();
+baseDefenseCoopGame.start();
 
 
 io.sockets.on('connection', newConnection);
@@ -31,7 +29,7 @@ function newConnection(socket){
   //Client first connects, create Client object and snake
   console.log("a user connected: ", socket.id);
 
-    socket.on('clientData', clientJoin);
+  socket.on('clientData', clientJoin);
     function clientJoin(clientData){
         console.log("Client Data: ", clientData);
     }
@@ -43,13 +41,13 @@ function newConnection(socket){
         socket.emit('pong', serverTime);
     }
 
-    socket.on('userEvent', function(userEvent){
+  socket.on('userEvent', function(userEvent){
         console.log("Event: ", userEvent);
         //handle event in server GAMESTATE
     });
 
 
-    socket.on('disconnecting', clientDisconnected);
+  socket.on('disconnecting', clientDisconnected);
     function clientDisconnected(){
         console.log("client disconnected: ", socket.id);
     }

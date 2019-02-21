@@ -1,4 +1,6 @@
-class Engine {
+var States = require('./states.js');
+
+module.exports = class Engine {
   constructor({
     ticRate=20
   }){
@@ -70,5 +72,3 @@ class Engine {
   }
 
 }//end class Engine
-
-module.exports = Engine;
